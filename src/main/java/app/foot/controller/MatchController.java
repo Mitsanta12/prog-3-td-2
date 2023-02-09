@@ -22,7 +22,6 @@ public class MatchController {
   private final MatchRestMapper mapper;
   private final PlayerScorerRestMapper scorerMapper;
 
-  //TODO: add GET /matches/{id} and integration test ok and ko
 
   @GetMapping("/matches")
   public List<Match> getMatches() {
@@ -30,6 +29,13 @@ public class MatchController {
         .map(mapper::toRest)
         .toList();
   }
+
+  @GetMapping("/matches/{id}")
+  public Match getMatchById(@PathVariable Integer id) {
+    return mapper.toRest(service.getMatchById(id)
+    );
+  }
+
 
   @PostMapping("/matches/{matchId}/goals")
   public Match addGoals(@PathVariable int matchId, @RequestBody List<PlayerScorer> scorers) {

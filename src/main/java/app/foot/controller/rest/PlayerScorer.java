@@ -11,4 +11,6 @@ public class PlayerScorer {
   private Player player;
   private Integer scoreTime;
   private Boolean isOG;
+
+
 }

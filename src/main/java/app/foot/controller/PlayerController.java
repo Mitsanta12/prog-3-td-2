@@ -4,8 +4,7 @@ import app.foot.controller.rest.Player;
 import app.foot.controller.rest.mapper.PlayerRestMapper;
 import app.foot.service.PlayerService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,5 +22,27 @@ public class PlayerController {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    //TODO: add POST /players and add integration test ok and ko
+    //TODO: add POST /players and add integration test ok and ko(done)
+    @PostMapping("/players")
+    public List<Player> addPlayers(@RequestBody List<Player> toCreate) {
+        List<app.foot.model.Player> domain = toCreate.stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toUnmodifiableList());
+        return service.createPlayers(domain).stream()
+                .map(mapper::toRest)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    //TODO: (done) add PUT /players where you can modify the name and the guardian status of a player
+    // Don't forget to add integration tests for this
+    @PutMapping("/players")
+    public List<Player>  updatePlayers(@RequestBody List<Player> toSave) {
+        List<app.foot.model.Player> domain = toSave.stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toUnmodifiableList());
+        return service.updatePlayers(domain).stream()
+                .map(mapper::toRest)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
 }

@@ -1,9 +1,11 @@
 package unit;
 
+import app.foot.exception.NotFoundException;
 import app.foot.model.Player;
 import app.foot.model.PlayerScorer;
 import app.foot.repository.MatchRepository;
 import app.foot.repository.PlayerRepository;
+import app.foot.repository.TeamRepository;
 import app.foot.repository.entity.MatchEntity;
 import app.foot.repository.entity.PlayerEntity;
 import app.foot.repository.entity.PlayerScoreEntity;
@@ -23,7 +25,8 @@ public class PlayerMapperTest {
     public static final int MATCH_ID = 1;
     MatchRepository matchRepositoryMock = mock(MatchRepository.class);
     PlayerRepository playerRepositoryMock = mock(PlayerRepository.class);
-    PlayerMapper subject = new PlayerMapper(matchRepositoryMock, playerRepositoryMock);
+    TeamRepository teamRepositoryMock = mock(TeamRepository.class);
+    PlayerMapper subject = new PlayerMapper(matchRepositoryMock, playerRepositoryMock, teamRepositoryMock);
 
     private static PlayerEntity entityRakoto() {
         return playerEntityRakoto(teamBarea());
@@ -97,5 +100,20 @@ public class PlayerMapperTest {
                 .ownGoal(false)
                 .match(matchEntity1)
                 .build(), actual);
+    }
+
+       @Test
+    void player_to_entity_ko() {
+        Player player = Player
+                .builder()
+                .id(1)
+                .name("Rakoto")
+                .isGuardian(false)
+                .teamName("error")
+                .build();
+
+        when(teamRepositoryMock.findByName("error")).thenThrow(new NotFoundException("Team "+player.getTeamName()+" not found"));
+
+        assertThrowsExceptionMessage("404 NOT_FOUND : Team error not found", NotFoundException.class, () -> subject.toEntity(player));
     }
 }
